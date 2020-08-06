@@ -36,11 +36,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private boolean directorySelect = false;
     private List<File> files;
 
-    public FileAdapter(Context context, List<Item> items, OnPathChangeListener onPathChangeListener, OnSelectItemListener onSelectItemListener) {
+    public FileAdapter(Context context, List<Item> items, OnPathChangeListener onPathChangeListener, OnSelectItemListener onSelectItemListener, String currentPath) {
         this.context = context;
         this.items = items;
         this.onPathChangeListener = onPathChangeListener;
         this.onSelectItemListener = onSelectItemListener;
+        this.currentPath = currentPath;
         files = new ArrayList<>();
     }
 

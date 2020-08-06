@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
+        String subfolder = "Download";
 
 
         Button singleFilePickerButton = findViewById(R.id.btn_single_file_picker);
@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
             if(permissionGranted()) {
                 SingleFilePickerDialog singleFilePickerDialog = new SingleFilePickerDialog(this,
                         () -> Toast.makeText(MainActivity.this, "Canceled!!", Toast.LENGTH_SHORT).show(),
-                        files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show());
+                        files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show(),
+                        subfolder);
                 singleFilePickerDialog.show();
             }
             else{
@@ -49,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
             if(permissionGranted()) {
                 MultiFilePickerDialog multiFilePickerDialog = new MultiFilePickerDialog(this,
                         () -> Toast.makeText(MainActivity.this, "Canceled!!", Toast.LENGTH_SHORT).show(),
-                        files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show()
+                        files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show(),
+                        subfolder
                 );
                 multiFilePickerDialog.show();
             }
@@ -64,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
             if(permissionGranted()) {
                 DirectoryPickerDialog directoryPickerDialog = new DirectoryPickerDialog(this,
                         () -> Toast.makeText(MainActivity.this, "Canceled!!", Toast.LENGTH_SHORT).show(),
-                        files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show()
+                        files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show(),
+                        subfolder
                 );
                 directoryPickerDialog.show();
             }

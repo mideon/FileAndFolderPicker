@@ -23,13 +23,15 @@ import ir.androidexception.filepicker.R;
 import ir.androidexception.filepicker.adapter.FileAdapter;
 import ir.androidexception.filepicker.databinding.DialogPickerBinding;
 import ir.androidexception.filepicker.interfaces.OnCancelPickerDialogListener;
+import ir.androidexception.filepicker.interfaces.OnChangeInitialPathListener;
 import ir.androidexception.filepicker.interfaces.OnConfirmDialogListener;
 import ir.androidexception.filepicker.interfaces.OnPathChangeListener;
 import ir.androidexception.filepicker.model.Item;
+import ir.androidexception.filepicker.utility.FileUtils;
 import ir.androidexception.filepicker.utility.Util;
 
 
-public class DirectoryPickerDialog extends Dialog implements OnPathChangeListener {
+public class DirectoryPickerDialog extends Dialog implements OnPathChangeListener, OnChangeInitialPathListener {
     private RecyclerView recyclerViewDirectories;
     private FloatingActionButton fab;
     private ImageView close;
@@ -38,6 +40,7 @@ public class DirectoryPickerDialog extends Dialog implements OnPathChangeListene
     private FileAdapter adapter;
     private OnCancelPickerDialogListener onCancelPickerDialogListener;
     private OnConfirmDialogListener onConfirmDialogListener;
+    private String initialPath = "";
     private String path;
     public DirectoryPickerDialog(@NonNull Context context, OnCancelPickerDialogListener onCancelPickerDialogListener,
                                  OnConfirmDialogListener onConfirmDialogListener) {
@@ -45,6 +48,12 @@ public class DirectoryPickerDialog extends Dialog implements OnPathChangeListene
         this.context = context;
         this.onCancelPickerDialogListener = onCancelPickerDialogListener;
         this.onConfirmDialogListener = onConfirmDialogListener;
+    }
+
+    public DirectoryPickerDialog(@NonNull Context context, OnCancelPickerDialogListener onCancelPickerDialogListener,
+                                 OnConfirmDialogListener onConfirmDialogListener, String initialPath) {
+        this(context, onCancelPickerDialogListener, onConfirmDialogListener);
+        this.initialPath = initialPath;
     }
 
 
@@ -94,14 +103,19 @@ public class DirectoryPickerDialog extends Dialog implements OnPathChangeListene
 
     private void setupDirectoriesListRecyclerView() {
         List<Item> items = new ArrayList<>();
-        File internalStorage = Environment.getExternalStorageDirectory();
+        File internalStorage = FileUtils.getCurrentPath(initialPath, this);
+
+        if(Util.permissionGranted(context) && internalStorage.exists()) {
+            binding.setPath("Internal Storage" + context.getString(R.string.arrow) + initialPath);
+        }
+
         path = internalStorage.getPath();
         List<File> children = new ArrayList<>(Arrays.asList(Objects.requireNonNull(internalStorage.listFiles())));
         for (File file : children){
             if(file.isDirectory())
                 items.add(new Item(file));
         }
-        adapter = new FileAdapter(context, items, this, null);
+        adapter = new FileAdapter(context, items, this, null, internalStorage.getPath());
         adapter.setDirectorySelect(true);
         recyclerViewDirectories.setAdapter(adapter);
         recyclerViewDirectories.setNestedScrollingEnabled(false);
@@ -121,5 +135,10 @@ public class DirectoryPickerDialog extends Dialog implements OnPathChangeListene
     public void onChanged(String path) {
         this.path = path;
         binding.setPath(Util.changePathFormat(context, path));
+    }
+
+    @Override
+    public void onChangeInitialPath(String newPath) {
+        this.initialPath = newPath;
     }
 }
