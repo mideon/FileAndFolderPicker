@@ -44,6 +44,8 @@ public class SingleFilePickerDialog extends Dialog implements OnPathChangeListen
     private OnConfirmDialogListener onConfirmDialogListener;
     private File file;
     private String initialPath = "";
+    private String fileExtType = "";
+
     public SingleFilePickerDialog(@NonNull Context context, OnCancelPickerDialogListener onCancelPickerDialogListener,
                                   OnConfirmDialogListener onConfirmDialogListener) {
         super(context);
@@ -58,6 +60,15 @@ public class SingleFilePickerDialog extends Dialog implements OnPathChangeListen
         this.initialPath = initialPath;
     }
 
+    public SingleFilePickerDialog(@NonNull Context context, OnCancelPickerDialogListener onCancelPickerDialogListener,
+                                  OnConfirmDialogListener onConfirmDialogListener, String initialPath, String fileExtType) {
+        this(context, onCancelPickerDialogListener, onConfirmDialogListener, initialPath);
+        this.fileExtType = fileExtType;
+    }
+
+    public void setFileExtType(String fileExtType) {
+        this.fileExtType = fileExtType;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +121,7 @@ public class SingleFilePickerDialog extends Dialog implements OnPathChangeListen
         for (File file : children){
             items.add(new Item(file));
         }
-        adapter = new FileAdapter(context, items, this, this, internalStorage.getPath());
+        adapter = new FileAdapter(context, items, this, this, internalStorage.getPath(), fileExtType);
         recyclerViewDirectories.setAdapter(adapter);
         recyclerViewDirectories.setNestedScrollingEnabled(false);
     }

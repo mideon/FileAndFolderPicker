@@ -32,6 +32,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private OnPathChangeListener onPathChangeListener;
     private OnSelectItemListener onSelectItemListener;
     private String currentPath = "";
+    private String filterExtType = "";
     private boolean multiFileSelect = false;
     private boolean directorySelect = false;
     private List<File> files;
@@ -43,6 +44,11 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         this.onSelectItemListener = onSelectItemListener;
         this.currentPath = currentPath;
         files = new ArrayList<>();
+    }
+
+    public FileAdapter(Context context, List<Item> items, OnPathChangeListener onPathChangeListener, OnSelectItemListener onSelectItemListener, String currentPath, String filterExtType) {
+        this(context, items, onPathChangeListener, onSelectItemListener, currentPath);
+        this.filterExtType = filterExtType;
     }
 
     @NonNull
@@ -204,42 +210,50 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                     GlideApp.with(context).load(R.drawable.ic_unknown_format).into(itemFileBinding.ivItemFile);
                     itemFileBinding.ivItemFileFileType.setVisibility(View.GONE);
             }
-            itemFileBinding.setItem(item);
-            itemFileBinding.getRoot().setOnClickListener( view -> {
-                File file = item.getFile();
-                if(file.isDirectory()){
-                    // Click On Directory
-                    List<Item> newItems = new ArrayList<>();
-                    File[] children = file.listFiles();
-                    if(children!=null){
-                        if(directorySelect){
-                            for (File f : children) {
-                                if(f.isDirectory())
+            if(filterExtType != null && !filterExtType.equals("") && !item.getFile().getName().endsWith(filterExtType) && !item.getFile().isDirectory()) {
+                itemFileBinding.getRoot().setAlpha(0.1f);
+                itemFileBinding.getRoot().setOnClickListener(null);
+            } else {
+                itemFileBinding.getRoot().setAlpha(1f);
+
+                itemFileBinding.getRoot().setOnClickListener( view -> {
+                    File file = item.getFile();
+                    if(file.isDirectory()){
+                        // Click On Directory
+                        List<Item> newItems = new ArrayList<>();
+                        File[] children = file.listFiles();
+                        if(children!=null){
+                            if(directorySelect){
+                                for (File f : children) {
+                                    if(f.isDirectory())
+                                        newItems.add(new Item(f));
+                                }
+                            }
+                            else{
+                                for (File f : children) {
                                     newItems.add(new Item(f));
+                                }
                             }
+                            items = newItems;
+                            notifyDataSetChanged();
                         }
-                        else{
-                            for (File f : children) {
-                                newItems.add(new Item(f));
-                            }
-                        }
-                        items = newItems;
-                        notifyDataSetChanged();
+
+
+                        currentPath = file.getPath();
+                        onPathChangeListener.onChanged(currentPath);
+                        if(!multiFileSelect && onSelectItemListener!=null)
+                            onSelectItemListener.onSelected(null);
+
                     }
+                    else{
+                        // Click On File
+                        select(getAdapterPosition());
+                        onSelectItemListener.onSelected(file);
+                    }
+                });
+            }
+            itemFileBinding.setItem(item);
 
-
-                    currentPath = file.getPath();
-                    onPathChangeListener.onChanged(currentPath);
-                    if(!multiFileSelect && onSelectItemListener!=null)
-                        onSelectItemListener.onSelected(null);
-
-                }
-                else{
-                    // Click On File
-                    select(getAdapterPosition());
-                    onSelectItemListener.onSelected(file);
-                }
-            });
 //            setColors();
             itemFileBinding.executePendingBindings();
         }

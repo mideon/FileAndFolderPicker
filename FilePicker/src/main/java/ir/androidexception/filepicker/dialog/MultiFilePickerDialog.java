@@ -42,6 +42,7 @@ public class MultiFilePickerDialog extends Dialog implements OnPathChangeListene
     private OnConfirmDialogListener onConfirmDialogListener;
     private List<File> files;
     private String initialPath = "";
+    private String fileExtType = "";
 
     public MultiFilePickerDialog(@NonNull Context context, OnCancelPickerDialogListener onCancelPickerDialogListener,
                                  OnConfirmDialogListener onConfirmDialogListener) {
@@ -57,7 +58,15 @@ public class MultiFilePickerDialog extends Dialog implements OnPathChangeListene
         this.initialPath = initialPath;
     }
 
+    public MultiFilePickerDialog(@NonNull Context context, OnCancelPickerDialogListener onCancelPickerDialogListener,
+                                 OnConfirmDialogListener onConfirmDialogListener, String initialPath, String fileExtType) {
+        this(context, onCancelPickerDialogListener, onConfirmDialogListener, initialPath);
+        this.fileExtType = fileExtType;
+    }
 
+    public void setFileExtType(String fileExtType) {
+        this.fileExtType = fileExtType;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +129,7 @@ public class MultiFilePickerDialog extends Dialog implements OnPathChangeListene
 //            items.add(new Item(new File(sdPath)));
 //        }
 
-        adapter = new FileAdapter(context, items, this, this, internalStorage.getPath());
+        adapter = new FileAdapter(context, items, this, this, internalStorage.getPath(), fileExtType);
         adapter.setMultiFileSelect(true);
         recyclerViewDirectories.setAdapter(adapter);
         recyclerViewDirectories.setNestedScrollingEnabled(false);

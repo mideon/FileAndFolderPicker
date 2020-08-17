@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 SingleFilePickerDialog singleFilePickerDialog = new SingleFilePickerDialog(this,
                         () -> Toast.makeText(MainActivity.this, "Canceled!!", Toast.LENGTH_SHORT).show(),
                         files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show(),
-                        subfolder);
+                        subfolder,
+                        ".json"
+                );
                 singleFilePickerDialog.show();
             }
             else{
@@ -53,12 +55,14 @@ public class MainActivity extends AppCompatActivity {
                         files -> Toast.makeText(MainActivity.this, files[0].getPath(), Toast.LENGTH_SHORT).show(),
                         subfolder
                 );
+                multiFilePickerDialog.setFileExtType(".xml");
                 multiFilePickerDialog.show();
             }
             else{
                 requestPermission();
             }
         });
+
 
 
         Button directoryPickerButton = findViewById(R.id.btn_directory_picker);
